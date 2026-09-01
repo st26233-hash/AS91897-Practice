@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- customisation form options -->
+    <title>Customise - Pizza Palace</title>
+</head>
+
+<body>
+    <h1>Customise Your Pizza</h1>
+
+    <h2>{{ pizza["name"] }}</h2>
+
+    <p>{{ pizza["description"] }}</p>
+
+    <p>Base price: ${{ "%.2f"|format(pizza["price"]) }}</p>
+
+    <form method="POST">
+
+    <h3>Choose a size</h3>
+
+    <label>
+        <input type="radio" name="size" value="Medium" required>
+        Medium (+$0.00)
+    </label>
+
+    <br>
+
+    <label>
+        <input type="radio" name="size" value="Large">
+        Large (+$3.00)
+    </label>
+
+    <h3>Additional toppings</h3>
+
+    <label>
+        <input type="checkbox" name="topping" value="Pepperoni">
+        Pepperoni (+$2.00)
+    </label>
+
+    <br>
+
+    <label>
+        <input type="checkbox" name="topping" value="Mushrooms">
+        Mushrooms (+$1.50)
+    </label>
+
+    <br>
+
+    <label>
+        <input type="checkbox" name="topping" value="Olives">
+        Olives (+$1.50)
+    </label>
+
+    <h3>Quantity</h3>
+
+    <input type="number" name="quantity" min="1" max="10" value="1" required>
+
+    <br><br>
+
+    <button type="submit">Add to Cart</button>
+
+</form>
+
+    <button type="button">Add to Cart</button>
+
+    <br><br>
+
+    <a href="{{ url_for('menu') }}">Back to Menu</a>
+</body>
+</html>
