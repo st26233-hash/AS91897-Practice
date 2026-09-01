@@ -1,11 +1,11 @@
-# importing flask
-
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
-# collection of pizza data
+# creating the cart to store pizzas
+cart = []
 
+# collection of pizza data
 pizzas = [
     {
         "id": 1,
@@ -26,47 +26,33 @@ pizzas = [
         "price": 19.00
     },
     {
-        "id": 3,
+        "id": 4,
         "name": "Vegetarian",
         "description": "Tomato sauce, mozzarella, mushrooms, capsicum and onion",
         "price": 17.00
     },
     {
-        "id": 4,
+        "id": 5,
         "name": "BBQ Chicken",
         "description": "BBQ sauce, mozzarella, chicken and onion",
         "price": 19.00
     }
 ]
 
+# routes for index menu and customise pages
+
 @app.route("/")
 def home():
-    """Display the home page."""
     return render_template("index.html")
 
-# Displays the menu when navigating to /menu
 
 @app.route("/menu")
 def menu():
-    """Display the pizza menu."""
     return render_template("menu.html", pizzas=pizzas)
 
 
-if __name__ == "__main__":
-    app.run(debug=True)
-
-# displaying menu.html at menu page
-
-@app.route("/menu")
-def menu():
-    """Display the pizza menu."""
-    return render_template("menu.html")
-
-# customisation form route
-
- @app.route("/customise/<int:pizza_id>", methods=["GET", "POST"])
+@app.route("/customise/<int:pizza_id>", methods=["GET", "POST"])
 def customise(pizza_id):
-    """Display and process pizza customisation."""
 
     for pizza in pizzas:
         if pizza["id"] == pizza_id:
@@ -74,12 +60,23 @@ def customise(pizza_id):
             if request.method == "POST":
                 size = request.form["size"]
                 toppings = request.form.getlist("topping")
-                quantity = request.form["quantity"]
+                quantity = int(request.form["quantity"])
 
-                print(size)
-                print(toppings)
-                print(quantity)
+                item = {
+                    "pizza": pizza,
+                    "size": size,
+                    "toppings": toppings,
+                    "quantity": quantity
+                }
+
+                cart.append(item)
+
+                return "Added to cart!"
 
             return render_template("customise.html", pizza=pizza)
 
     return "Pizza not found", 404
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
