@@ -5,7 +5,7 @@ app = Flask(__name__)
 # creating the cart to store pizzas
 cart = []
 
-# collection of pizza data
+# collection of pizza data dictionary
 pizzas = [
     {
         "id": 1,
@@ -39,6 +39,18 @@ pizzas = [
     }
 ]
 
+# toppings/sizes price data dictionary
+sizes = {
+    "Medium": 0.00,
+    "Large": 3.00
+}
+
+topping_prices = {
+    "Pepperoni": 2.00,
+    "Mushrooms": 1.50,
+    "Olives": 1.50
+}
+
 # routes for index menu and customise pages
 
 @app.route("/")
@@ -50,6 +62,7 @@ def home():
 def menu():
     return render_template("menu.html", pizzas=pizzas)
 
+# receiving data from customise form and adding to cart, also checking if pizza exists
 
 @app.route("/customise/<int:pizza_id>", methods=["GET", "POST"])
 def customise(pizza_id):
@@ -59,19 +72,28 @@ def customise(pizza_id):
 
             if request.method == "POST":
                 size = request.form["size"]
-                toppings = request.form.getlist("topping")
+                selected_toppings = request.form.getlist("topping")
                 quantity = int(request.form["quantity"])
+
+                price = pizza["price"]
+                price = price + sizes[size]
+
+                for topping in selected_toppings:
+                    price = price + topping_prices[topping]
+
+                total = price * quantity
 
                 item = {
                     "pizza": pizza,
                     "size": size,
-                    "toppings": toppings,
-                    "quantity": quantity
+                    "toppings": selected_toppings,
+                    "quantity": quantity,
+                    "total": total
                 }
 
                 cart.append(item)
 
-                return "Added to cart!"
+                return render_template("cart.html", cart=cart)
 
             return render_template("customise.html", pizza=pizza)
 
