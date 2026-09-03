@@ -2,10 +2,10 @@ from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
-# creating the cart to store pizzas
+# Creating cart list
 cart = []
 
-# collection of pizza data dictionary
+# Pizza data
 pizzas = [
     {
         "id": 1,
@@ -39,7 +39,7 @@ pizzas = [
     }
 ]
 
-# toppings/sizes price data dictionary
+# Topping and size price data
 sizes = {
     "Medium": 0.00,
     "Large": 3.00
@@ -51,19 +51,20 @@ topping_prices = {
     "Olives": 1.50
 }
 
-# routes for index menu and customise pages
 
+# Home page
 @app.route("/")
 def home():
     return render_template("index.html")
 
 
+# Menu page
 @app.route("/menu")
 def menu():
     return render_template("menu.html", pizzas=pizzas)
 
-# receiving data from customise form and adding to cart, also checking if pizza exists
 
+# Customise page
 @app.route("/customise/<int:pizza_id>", methods=["GET", "POST"])
 def customise(pizza_id):
 
@@ -75,14 +76,17 @@ def customise(pizza_id):
                 selected_toppings = request.form.getlist("topping")
                 quantity = int(request.form["quantity"])
 
+                # Calculate the price of one pizza
                 price = pizza["price"]
                 price = price + sizes[size]
 
                 for topping in selected_toppings:
                     price = price + topping_prices[topping]
 
+                # Calculate the total for the quantity
                 total = price * quantity
 
+                # Create a cart item
                 item = {
                     "pizza": pizza,
                     "size": size,
@@ -91,14 +95,58 @@ def customise(pizza_id):
                     "total": total
                 }
 
+                # Add the item to the cart
                 cart.append(item)
 
-                return render_template("cart.html", cart=cart)
+                # Calculate the cart total
+                cart_total = 0
+
+                for item in cart:
+                    cart_total = cart_total + item["total"]
+
+                return render_template(
+                    "cart.html",
+                    cart=cart,
+                    cart_total=cart_total
+                )
 
             return render_template("customise.html", pizza=pizza)
 
     return "Pizza not found", 404
 
 
+# Cart route
+@app.route("/cart")
+def view_cart():
+    cart_total = 0
+
+    for item in cart:
+        cart_total = cart_total + item["total"]
+
+    return render_template(
+        "cart.html",
+        cart=cart,
+        cart_total=cart_total
+    )
+
+# Remove item from cart
+@app.route("/remove/<int:item_id>")
+def remove_item(item_id):
+
+    if item_id >= 0 and item_id < len(cart):
+        cart.pop(item_id)
+
+    cart_total = 0
+
+    for item in cart:
+        cart_total = cart_total + item["total"]
+
+    return render_template(
+        "cart.html",
+        cart=cart,
+        cart_total=cart_total
+    )
+
+# Running website
 if __name__ == "__main__":
     app.run(debug=True)

@@ -1,0 +1,31 @@
+html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart - Pizza Palace</title>
+</head>
+
+<body>
+    <h1>Your Cart</h1>
+
+    {% for item in cart %}
+        <h2>{{ item["pizza"]["name"] }}</h2>
+
+        <p>Size: {{ item["size"] }}</p>
+        <p>Toppings: {{ item["toppings"] }}</p>
+        <p>Quantity: {{ item["quantity"] }}</p>
+        <p>Item total: ${{ "%.2f"|format(item["total"]) }}</p>
+
+        <a href="{{ url_for('remove_item', item_id=loop.index0) }}">Remove</a>
+
+        <hr>
+    {% endfor %}
+    
+    <h2>Order Total: ${{ "%.2f"|format(cart_total) }}</h2>
+
+    <a href="{{ url_for('menu') }}">Continue Shopping</a>
+
+</body>
+</html>
