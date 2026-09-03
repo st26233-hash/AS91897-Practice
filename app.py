@@ -129,6 +129,24 @@ def view_cart():
         cart_total=cart_total
     )
 
+# Checkout page
+@app.route("/checkout", methods=["GET", "POST"])
+def checkout():
+
+    if request.method == "POST":
+        name = request.form["name"]
+        email = request.form["email"]
+        phone = request.form["phone"]
+
+        return render_template(
+            "confirmation.html",
+            name=name,
+            email=email,
+            phone=phone,
+            cart=cart
+        )
+    return render_template("checkout.html")
+
 # Remove item from cart
 @app.route("/remove/<int:item_id>")
 def remove_item(item_id):
